@@ -1,4 +1,5 @@
 import utils
+import projections
 import numpy as np
 import autograd.numpy as anp
 import pandas as pd
@@ -13,17 +14,14 @@ from pymanopt.core.problem import Problem
 from pymanopt.function import autograd, numpy
 from pymanopt import optimizers
 
-def PSC_points(points,d, output="Embedded"):
+def PSC_points(points,d):
     #Project points to lower-dimensional Stiefel of d rows, k cols
 
     N=points[0].shape[0]
     alpha=Stiefel(N,d).random_point()
-    found_alpha=utils.manopt_alpha(points,alpha)
-    projected = utils.pi_alpha_all(found_alpha, points)
-    if output=="Embedded":
-      return np.matmul(found_alpha, projected), found_alpha
-    else:
-      return projected, found_alpha
+    found_alpha=projections.manopt_alpha(points,alpha)
+    projected = projections.yhat_alpha_all(found_alpha, points)
+    return projected, found_alpha
 
 
 def PGA_tangent_vecs(points, d):
@@ -99,25 +97,25 @@ def compare_PGA_var(sample,d):
     return projected_variance/initial_variance
 
 def compare_PSC_var(sample,d):
-  #Compare variance explained for PSC projection
-  N=sample['N']
-  n=sample['n']
-  s=sample['s']
-  alpha=sample['ground truth']
-  epsilon=sample['epsilon']
-  #manifold=Hypersphere(N-1)
-  manifold=Hypersphere(d-1)
+    #Compare variance explained for PSC projection
+    N=sample['N']
+    n=sample['n']
+    s=sample['s']
+    alpha=sample['ground truth']
+    epsilon=sample['epsilon']
+    #manifold=Hypersphere(N-1)
+    manifold=Hypersphere(d-1)
 
-  mean=frechetmean(sample['points'].reshape(s,N),N,1)
-  initial_variance = var(sample['points'],mean)
+    mean=frechetmean(sample['points'].reshape(s,N),N,1)
+    initial_variance = var(sample['points'],mean)
 
-  projected, found_alpha =PSC_points(sample['points'],d, output="Other")
-  projected_mean=frechetmean(projected.reshape(s,d),d,1)
+    projected, found_alpha = PSC_points(sample['points'],d)
+    projected_mean = frechetmean(projected.reshape(s,d),d,1)
 
-  projected=projected.reshape(s,d,1)
-  projected_variance = var(projected, projected_mean)
+    projected=projected.reshape(s,d,1)
+    projected_variance = var(projected, projected_mean)
 
-  return projected_variance/initial_variance
+    return projected_variance/initial_variance
 
 def output_var_df(N, n, s, t, eps_vec, n_components):
     tmp = []

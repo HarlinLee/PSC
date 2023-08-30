@@ -17,7 +17,7 @@ The `experiments/` folder contains code to recreate experiments and figures prod
 
 1. `low_dim.ipynb`: Low-dimensional example with $k=1, n=2, N=3$ for PSC demonstration. Figures `lowdim-opt.pdf`, `lowdim_piy_0.8.pdf`, `lowdim_y_0.8.pdf`, `lowdim_yhat_0.8.pdf` are outputs of this code with noise level $\epsilon=0.8$.
 
-2. `variance_comparison.ipynb`: Comparison with PGA. `sampledf.csv` is saved output. Check `comparison.py` and `plots.py` for more details.
+2. `variance_comparison.ipynb`: Comparison with PGA. `var_data.pkl` is saved output. Check `comparison.py` and `plots.py` for more details.
 
 3. `brain.ipynb`: Brain connectivity matrix experiment. Uses matlab data saved in the folder `connectivity_matrices` and saves the plot `brain_projected.pdf`.
 
