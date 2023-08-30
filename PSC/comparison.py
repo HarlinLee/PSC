@@ -1,5 +1,4 @@
 import utils
-import projections as proj
 import numpy as np
 import autograd.numpy as anp
 import pandas as pd
@@ -15,12 +14,12 @@ from pymanopt.function import autograd, numpy
 from pymanopt import optimizers
 
 def PSC_points(points,d, output="Embedded"):
-    #Project points to lower-dimensional Stiefel
+    #Project points to lower-dimensional Stiefel of d rows, k cols
 
-    N=len(points[0])
+    N=points[0].shape[0]
     alpha=Stiefel(N,d).random_point()
-    found_alpha=proj.manopt_alpha(points,alpha)
-    projected = proj.yhat_alpha_all(found_alpha, points)
+    found_alpha=utils.manopt_alpha(points,alpha)
+    projected = utils.pi_alpha_all(found_alpha, points)
     if output=="Embedded":
       return np.matmul(found_alpha, projected), found_alpha
     else:
@@ -28,6 +27,7 @@ def PSC_points(points,d, output="Embedded"):
 
 
 def PGA_tangent_vecs(points, d):
+    #Project to the first d principal components
     s = points.shape[0]
     N = points.shape[1]
     st_kN = Hypersphere(N - 1)
@@ -38,7 +38,7 @@ def PGA_tangent_vecs(points, d):
 
     tpca.fit(points.reshape(s, N), base_point=mean_estimate)
 
-    pc_matrix = np.array(tpca.components_[:d - 1])
+    pc_matrix = np.array(tpca.components_[:d-1])
 
     pc_projection = np.matmul(pc_matrix.T, pc_matrix)
 
@@ -124,13 +124,13 @@ def output_var_df(N, n, s, t, eps_vec, n_components):
     for epsilon in eps_vec:
       for i in range(t):
         sample=utils.sphere_point_cloud(N,n,s,epsilon)
-        for j in range(2,n_components+2):
+        for j in range(1,n_components+1):
           sample_df=pd.DataFrame(columns=['dims','PSC','PGA','epsilon','iteration'])
-          sample_df['PGA'] =  [compare_PGA_var(sample,j)]
-          sample_df['PSC'] = [compare_PSC_var(sample,j)]
+          sample_df['PGA'] =  [compare_PGA_var(sample,j+1)]
+          sample_df['PSC'] = [compare_PSC_var(sample,j+1)]
           sample_df['dims'] = [j]
           sample_df['epsilon'] = [epsilon]
           sample_df['iteration'] = [i]
           tmp.append(sample_df)
     ratios_df=pd.concat(tmp,ignore_index=True)
-    return ratios_df.groupby(['epsilon','dims'],as_index=False)[['PSC','PGA']].mean()
+    return ratios_df
