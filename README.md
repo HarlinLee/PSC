@@ -2,6 +2,22 @@
 
 Python code for the paper **"Equivariant Dimensionality Reduction on Stiefel Manifolds"** by **Andrew Lee**, **Harlin Lee**, **Jose Perea**, **Nikolas Schonsheck**, and **Madeleine Weinstein**.
 
+## What do I do first?
+
+For the easiest example, 
+
+```
+git clone https://github.com/HarlinLee/PSC.git
+cd PSC
+python demo.py
+```
+
+You may be asked to install certain packages, such as 
+
+```
+pip install pymanopt==2.2.0
+pip install autograd==1.6.2
+```
 
 ## What's inside?
 The `PSC/` package contains:
@@ -25,3 +41,6 @@ The `experiments/` folder contains code to recreate experiments and figures prod
     - `create_neural_response.ipynb`: A **Julia file** that generates data according to the neuronal stimulus space model. It uses auxilary functions in `julia_utilities.jl`. This makes files such as `neurons.h5`, `random_walk.h5` (or `100_neurons_13k_steps_nonuniform_half_random_walk.h5`), and `response_matrix.h5`. `centered_normalized_response_matrix_100_neurons_13k_steps_nonuniform_half_random_walk.h5` is the centered and $\ell_2$-normalized response matrix (see code at top of `stimulus_space_model.ipynb`).
 
     - `stimulus_space_model.ipynb`: Applies PSC, MDS, and persistent cohomology on the response matrix. Since MDS takes a while, `MDS_script.py` can be used as an alternative for running MDS inside the Jupyter notebook. Figures `psc_angle.pdf`, `psc_path.pdf`, `comparisons-others.pdf`, `comparisons-path.pdf` are generated, and dimensionality reduction results `circ_coords.h5`, `mds.h5`, `PSC.pkl` are saved.
+  
+5. `video/`
+   - `video-clustering.ipynb`: Video clustering experiment.
