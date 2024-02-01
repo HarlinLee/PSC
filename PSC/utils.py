@@ -1,40 +1,29 @@
 import numpy as np
-from projections import pi_alpha
-
 from pymanopt.manifolds.stiefel import Stiefel
-from pymanopt.core.problem import Problem
-from pymanopt import optimizers
-
-import geomstats
-from geomstats.geometry.hypersphere import Hypersphere
-from geomstats.geometry.hypersphere import HypersphereMetric
-
-import matplotlib.pyplot as plt
+from .projections import pi_alpha_all
 
 def get_samples(st, p):
     return np.array([st.random_point() for i in range(p)])
 
+def rotation_mat(n):
+    return Stiefel(n, n).random_point()
+
 def check_orth(A):
     return np.allclose(A.T.dot(A), np.eye(A.shape[1]))
-
 
 def dist_St(X, Y):
     return np.linalg.norm(X - Y, 'fro')
 
-
 def dist_Gr(X, Y):
     return np.linalg.norm(X.dot(X.T) - Y.dot(Y.T), 'fro')
 
-
-def rotation_mat(n):
-    return Stiefel(n, n).random_point()
-
 def projection_cost(alpha, ys):
-    return np.sum([np.linalg.norm(y - pi_alpha(alpha, y), 'fro')**2 for y in ys])/len(ys)
+    return np.sum((ys - pi_alpha_all(alpha, ys))**2)/len(ys)
 
 def nuc_cost(alpha, ys):
-    return -np.sum([np.linalg.norm(alpha.T.dot(y), 'nuc') for y in ys])/len(ys)
-
+    Y = alpha.T.dot(ys).transpose((1, 0, 2))
+    u, s, vh = np.linalg.svd(Y)
+    return -np.sum(s)/len(ys)
 
 def random_tangent_vector_sphere(point, as_columns=True):
     # Gives random unit tangent vector a given point on sphere (extrinsic)
@@ -53,6 +42,10 @@ def random_tangent_vector_sphere(point, as_columns=True):
 
 
 def sphere_point_cloud(N, n, s, epsilon, alpha=None):
+    
+    from geomstats.geometry.hypersphere import Hypersphere
+    from geomstats.geometry.hypersphere import HypersphereMetric
+
     # Generates unifomly distributed points in neighborhood of subsphere
     st_Nn = Stiefel(N, n)
     st_kn = Hypersphere(n - 1)

@@ -1,5 +1,5 @@
-import utils
-import projections
+from . import utils
+from . import projections
 import numpy as np
 import autograd.numpy as anp
 import pandas as pd

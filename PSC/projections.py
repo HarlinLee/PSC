@@ -2,48 +2,51 @@ import numpy as np
 import autograd.numpy as anp
 from pymanopt.manifolds.stiefel import Stiefel
 from pymanopt.core.problem import Problem
-from pymanopt.function import autograd, numpy
+from pymanopt.function import autograd
 from pymanopt import optimizers
+from numpy.linalg import LinAlgError
 
-def orth_proj(X, k=None):
-    u, _, vh = np.linalg.svd(X)
-    if not k:
-        k = len(vh)
-    return u[:, :k].dot(vh)
+def yhat_alpha_all(alpha, ys):
+    Y = alpha.T.dot(ys).transpose((1, 0, 2)) # faster version of np.array([alpha.T.dot(y) for y in ys])
+    u, s, vh = np.linalg.svd(Y) # faster version of np.array([np.linalg.svd(y) for y in Y])
+    k = vh.shape[-1]
+    return np.einsum('ijk,ikl->ijl', u[:, :, :k], vh) # faster version of np.array([u[i, :, :k].dot(vh[i, :, :]) for i in range(len(u))])
 
-def yhat_alpha(alpha, y):   
-    return orth_proj(alpha.T.dot(y))
-
-def yhat_alpha_all(alpha, ys):   
-    return np.array([yhat_alpha(alpha, y) for y in ys])
-
-def pi_alpha(alpha, y):   
-    return alpha.dot(yhat_alpha(alpha, y))
-
-def pi_alpha_all(alpha, ys):   
-    return np.array([pi_alpha(alpha, y) for y in ys])
+def pi_alpha_all(alpha, ys):
+    yhats = yhat_alpha_all(alpha, ys)
+    return alpha.dot(yhats).transpose((1,0,2))
 
 def PCA(ys, n):
-    m = len(ys)
-    
-    # sample covariance matrix
-    S_hat = np.sum(np.array([y.dot(y.T) for y in ys]), axis=0)/m
-    w, v = np.linalg.eigh(S_hat)
+    S_hat = np.concatenate(ys, axis=-1) #np.sum(np.array([y.dot(y.T) for y in ys]), axis=0)/m
+    u, _, _ = np.linalg.svd(S_hat, full_matrices=False)
 
-    return v[:, -n:]
+    return u[:, :n]
 
-def manopt_alpha(ys, alpha_init):        
+def manopt_alpha(ys, alpha_init, verbosity=1):
     N, n = alpha_init.shape
-    st_Nn = Stiefel(N, n) 
-
-    @autograd(st_Nn)
-    def cost(point):
-        return -anp.sum([anp.linalg.norm(anp.dot(point.T, y), 'nuc') for y in ys])/len(ys)
-
-    problem = Problem(st_Nn, cost=cost)
-    optimizer = optimizers.SteepestDescent(verbosity=1)
-    res = optimizer.run(problem, initial_point=alpha_init).point
+    st_Nn = Stiefel(N, n)
     
-    # print('nuc_cost of initial alpha', cost(alpha_init), 'nuc_cost of final alpha', cost(res))
-    # print('projection_cost of initial alpha', projection_cost(alpha_init, ys), 'projection_cost of final alpha', projection_cost(res, ys))
+    try:
+        @autograd(st_Nn)
+        def cost(point):
+            Y = anp.dot(anp.transpose(point), ys)
+            Y = anp.swapaxes(Y, 1, 0)
+            u, s, vh = anp.linalg.svd(Y, full_matrices=False)
+            return -anp.sum(s)/len(ys)
+
+        problem = Problem(st_Nn, cost=cost)
+        optimizer = optimizers.SteepestDescent(verbosity=verbosity)
+        res = optimizer.run(problem, initial_point=alpha_init).point
+    
+    except LinAlgError as e:
+        print("LinAlgError in autograd SVD so moving to a different version of manopt_alpha.")
+        
+        @autograd(st_Nn)
+        def cost(point):
+            return -anp.sum([anp.linalg.norm(anp.dot(point.T, y), 'nuc') for y in ys])/len(ys)
+
+        problem = Problem(st_Nn, cost=cost)
+        optimizer = optimizers.SteepestDescent(verbosity=verbosity)
+        res = optimizer.run(problem, initial_point=alpha_init).point
+    
     return res
