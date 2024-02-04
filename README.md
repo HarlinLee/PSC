@@ -1,6 +1,6 @@
 # Principal Stiefel Coordinates (PSC)
 
-Python code for the paper **"Equivariant Dimensionality Reduction on Stiefel Manifolds"** by **Andrew Lee**, **Harlin Lee**, **Jose Perea**, **Nikolas Schonsheck**, and **Madeleine Weinstein**.
+Python code for the paper **["Equivariant Dimensionality Reduction on Stiefel Manifolds"](https://arxiv.org/abs/2309.10775)** by **Andrew Lee**, **Harlin Lee**, **Jose Perea**, **Nikolas Schonsheck**, and **Madeleine Weinstein**.
 
 ## What do I do first?
 
