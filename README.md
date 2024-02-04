@@ -17,6 +17,7 @@ You may be asked to install certain packages, such as
 ```
 pip install pymanopt==2.2.0
 pip install autograd==1.6.2
+pip install geomstats==2.6.0
 ```
 
 ## What's inside?
