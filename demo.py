@@ -1,5 +1,5 @@
-from PSC.projections import PCA, manopt_alpha, projection_cost, nuc_cost
-from PSC.utils import get_samples
+from PSC.projections import PCA, manopt_alpha
+from PSC.utils import get_samples, projection_cost, nuc_cost
 
 import numpy as np
 from pymanopt.manifolds.stiefel import Stiefel
