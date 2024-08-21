@@ -25,28 +25,28 @@ def PCA(ys, n):
 def manopt_alpha(ys, alpha_init, verbosity=1):
     N, n = alpha_init.shape
     st_Nn = Stiefel(N, n)
-    
-    try:
-        @autograd(st_Nn)
-        def cost(point):
-            Y = anp.dot(anp.transpose(point), ys)
-            Y = anp.swapaxes(Y, 1, 0)
-            u, s, vh = anp.linalg.svd(Y, full_matrices=False)
-            return -anp.sum(s)/len(ys)
 
-        problem = Problem(st_Nn, cost=cost)
-        optimizer = optimizers.SteepestDescent(verbosity=verbosity)
-        res = optimizer.run(problem, initial_point=alpha_init).point
-    
-    except LinAlgError as e:
-        print("LinAlgError in autograd SVD so moving to a different version of manopt_alpha.")
-        
+    if N > 200:  
         @autograd(st_Nn)
         def cost(point):
             return -anp.sum([anp.linalg.norm(anp.dot(point.T, y), 'nuc') for y in ys])/len(ys)
+    else:
+        try:
+            @autograd(st_Nn)
+            def cost(point):
+                Y = anp.dot(anp.transpose(point), ys)
+                Y = anp.swapaxes(Y, 1, 0)
+                u, s, vh = anp.linalg.svd(Y, full_matrices=False) # Seems slow for large N
+                return -anp.sum(s)/len(ys)
+                
+        except LinAlgError as e:
+            @autograd(st_Nn)
+            def cost(point):
+                return -anp.sum([anp.linalg.norm(anp.dot(point.T, y), 'nuc') for y in ys])/len(ys)
 
-        problem = Problem(st_Nn, cost=cost)
-        optimizer = optimizers.SteepestDescent(verbosity=verbosity)
-        res = optimizer.run(problem, initial_point=alpha_init).point
+        
+    problem = Problem(st_Nn, cost=cost)
+    optimizer = optimizers.SteepestDescent(verbosity=verbosity)
+    res = optimizer.run(problem, initial_point=alpha_init).point
     
     return res

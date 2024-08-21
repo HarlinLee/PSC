@@ -1,4 +1,4 @@
-from . import utils
+from . import data
 from . import projections
 import numpy as np
 import autograd.numpy as anp
@@ -121,7 +121,7 @@ def output_var_df(N, n, s, t, eps_vec, n_components):
     tmp = []
     for epsilon in eps_vec:
       for i in range(t):
-        sample=utils.sphere_point_cloud(N,n,s,epsilon)
+        sample=data.sphere_point_cloud(N,n,s,epsilon)
         for j in range(1,n_components+1):
           sample_df=pd.DataFrame(columns=['dims','PSC','PGA','epsilon','iteration'])
           sample_df['PGA'] =  [compare_PGA_var(sample,j+1)]
