@@ -26,13 +26,16 @@ The `PSC/` package contains:
 
 2. `utils.py`: Helper code including calculation of projection error.
 
-3. `comparison.py`: Helper functions for PGA comparison.
+3. `data.py`: Generate data points on the Stiefel manifold.
 
-4. `plots.py`: Plotting functions for PGA comparison.
+4. `initilization.py`: Code for checking rank condition and optional RANSAC algorithm.
+
+5. `comparison.py` and `plots.py`: Helper functions for PGA comparison.
+ 
 
 The `experiments/` folder contains code to recreate experiments and figures produced in the paper. The Jupyter notebooks were tested in Google Colab, so if you appropriately edit the variable DRIVE_PATH and output_folder, every experiment should be reproducible in either Google Colab or your local machine. 
 
-1. Section 5.1 `low_dim.ipynb`: Low-dimensional example with $k=1, n=2, N=3$ for PSC demonstration. Figures `lowdim-opt.pdf`, `lowdim_piy_0.8.pdf`, `lowdim_y_0.8.pdf`, `lowdim_yhat_0.8.pdf` are outputs of this code with noise level $\epsilon=0.8$.
+1. Section 5.1 `low_dim.ipynb`: Low-dimensional example with $k=1, n=2, N=3$ for PSC demonstration.
 
 2. Section 5.2 `variance_comparison.ipynb`: Comparison with PGA. `var_data.pkl` is saved output. Check `comparison.py` and `plots.py` for more details.
 
@@ -53,4 +56,6 @@ The `experiments/` folder contains code to recreate experiments and figures prod
    - Section 5.6.2. Whitney sums and the torus in `T2rank2embedding.ipynb`.
    - Section 5.6.3. The tangent bundle on $S^2$ in `sphere_tangent_bundle.ipynb` and `run_trials_sphere_tangent_bundle.ipynb`.
   
+7. SM 1 and 3.1 `initialization.ipynb`. `runtime.npz` has saved runtime values. Check `initialization.py` for more details.
 
+8. SM 3.3 `test_faster_PSC.ipynb`.
