@@ -33,7 +33,7 @@ The `PSC/` package contains:
 5. `comparison.py` and `plots.py`: Helper functions for PGA comparison.
  
 
-The `experiments/` folder contains code to recreate experiments and figures produced in the paper. The Jupyter notebooks were tested in Google Colab, so if you appropriately edit the variable DRIVE_PATH and output_folder, every experiment should be reproducible in either Google Colab or your local machine. 
+The `experiments/` folder contains code to recreate experiments and figures produced in the paper. 
 
 1. Section 5.1 `low_dim.ipynb`: Low-dimensional example with $k=1, n=2, N=3$ for PSC demonstration.
 
