@@ -9,16 +9,15 @@ For the easiest example,
 ```
 git clone https://github.com/HarlinLee/PSC.git
 cd PSC
+
+conda create -n psc python=3.10.14 --file conda_essential_requirements.txt
+conda activate psc
 python demo.py
 ```
 
-You may be asked to install certain packages, such as 
+If you prefer `pip`, you can use `pip install -r essential_requirements.txt`.
 
-```
-pip install pymanopt==2.2.0
-pip install autograd==1.6.2
-pip install geomstats==2.6.0
-```
+If you are interested in reproducing the results of the paper, you would need to install more packages via `conda_requirements.txt` or `pip_requirements.txt`.
 
 ## What's inside?
 The `PSC/` package contains:
