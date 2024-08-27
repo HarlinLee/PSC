@@ -10,14 +10,12 @@ For the easiest example,
 git clone https://github.com/HarlinLee/PSC.git
 cd PSC
 
-conda create -n psc python=3.10.14 --file requirements/conda_essential.txt
+conda create -n psc python=3.10.14
 conda activate psc
+pip install -r requirements/pip_essential.txt
 python demo.py
 ```
-
-If you prefer `pip`, you can use `pip install -r requirements/pip_essential.txt`.
-
-If you are interested in reproducing the results of the paper, you would need to install more packages via `requirements/conda.txt` or `requirements/pip.txt`.
+If you are interested in reproducing the figures and tables in the paper, you would need to install more packages via `pip install -r requirements/pip.txt`.
 
 ## What's inside?
 The `PSC/` package contains:
