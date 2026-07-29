@@ -7,7 +7,7 @@ Python code for the paper **[O(k)-Equivariant Dimensionality Reduction on Stiefe
 For the easiest example, 
 
 ```
-git clone https://github.com/HarlinLee/PSC.git
+git clone https://github.com/crispfish/PSC.git
 cd PSC
 
 conda create -n psc python=3.10.14
